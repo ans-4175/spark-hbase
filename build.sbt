@@ -2,7 +2,7 @@ lazy val root = (project in file(".")).
   settings(
     name := "spark_hbase",
     version := "1.0",
-    scalaVersion := "2.10.5",
+    scalaVersion := "2.11.6",
     sparkVersion := "1.3.0"
   )
 
