@@ -6,6 +6,15 @@ lazy val root = (project in file(".")).
     sparkVersion := "1.3.0"
   )
 
+resolvers ++= Seq(
+  "Apache Repo"   at "https://repository.apache.org/content/repositories/releases",
+  "Thrift-Repo"   at "http://people.apache.org/~rawson/repo",
+  "ClouderaRepo"  at "https://repository.cloudera.com/content/repositories/releases",
+  "ClouderaRcs"   at "https://repository.cloudera.com/artifactory/cdh-releases-rcs",
+  "releases"      at "http://scala-tools.org/repo-releases",
+  "rediscala"     at "http://dl.bintray.com/etaty/maven"
+) 
+
 libraryDependencies ++= Seq(
   "org.apache.hbase"         % "hbase"                    % "0.98.6-cdh5.3.1",
   "org.apache.hbase"         % "hbase-client"             % "0.98.6-cdh5.3.1",
