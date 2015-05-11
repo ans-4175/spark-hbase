@@ -54,8 +54,6 @@ object HBaseInput {
     val scanner = new Scan
     scanner.setStartRow(Bytes.toBytes(args(2)))
     scanner.setReversed(true)
-    scanner.setMaxResultSize(200)
-    scanner.setBatch(200)
     val stop = args(2) + "_1431241891000"
     scanner.setStopRow(Bytes.toBytes(stop))
 
