@@ -16,10 +16,10 @@ resolvers ++= Seq(
 ) 
 
 libraryDependencies ++= Seq(
-  "org.apache.hbase"         % "hbase"                    % "0.98.6-cdh5.3.1",
-  "org.apache.hbase"         % "hbase-client"             % "0.98.6-cdh5.3.1",
-  "org.apache.hbase"         % "hbase-server"             % "0.98.6-cdh5.3.1",
-  "org.apache.hbase"         % "hbase-common"             % "0.98.6-cdh5.3.1"
+  "org.apache.hbase"         % "hbase"                    % "1.0.0-cdh5.4.0",
+  "org.apache.hbase"         % "hbase-client"             % "1.0.0-cdh5.4.0",
+  "org.apache.hbase"         % "hbase-server"             % "1.0.0-cdh5.4.0",
+  "org.apache.hbase"         % "hbase-common"             % "1.0.0-cdh5.4.0"
 )
 
 mergeStrategy in assembly := {
