@@ -69,18 +69,21 @@ object HBaseInput {
       classOf[org.apache.hadoop.hbase.client.Result])
 
     //keyValue is a RDD[java.util.list[hbase.KeyValue]]
-    val keyValue = hBaseRDD.map(x => x._2).map(_.list)
+    //    val keyValue = hBaseRDD.map(x => x._2).map(_.list)
 
     //outPut is a RDD[String], in which each line represents a record in HBase
-    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
-      "columnFamily=%s,qualifier=%s,timestamp=%s,type=%s,value=%s".format(
-        Bytes.toStringBinary(CellUtil.cloneFamily(cell)),
-        Bytes.toStringBinary(CellUtil.cloneQualifier(cell)),
-        cell.getTimestamp.toString,
-        Type.codeToType(cell.getTypeByte),
-        Bytes.toStringBinary(CellUtil.cloneValue(cell)))))
+    //    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
+    //      "columnFamily=%s,qualifier=%s,timestamp=%s,type=%s,value=%s".format(
+    //        Bytes.toStringBinary(CellUtil.cloneFamily(cell)),
+    //        Bytes.toStringBinary(CellUtil.cloneQualifier(cell)),
+    //        cell.getTimestamp.toString,
+    //        Type.codeToType(cell.getTypeByte),
+    //        Bytes.toStringBinary(CellUtil.cloneValue(cell)))))
 
-    outPut.foreach(println)
+    //    outPut.foreach(println)
+
+    val count = hBaseRDD.count()
+    println("ini hasilnya: ", count)
 
     sc.stop()
   }
