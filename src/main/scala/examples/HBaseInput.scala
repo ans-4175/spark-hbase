@@ -52,10 +52,10 @@ object HBaseInput {
     }
 
     val scanner = new Scan
-    scanner.setStartRow(Bytes.toBytes(args(2)))
     scanner.setReversed(true)
-    val stop = args(2) + "_1431241891000"
-    scanner.setStopRow(Bytes.toBytes(stop))
+    val start = args(2) + "_1431241891000"
+    scanner.setStartRow(Bytes.toBytes(start))
+    scanner.setStopRow(Bytes.toBytes(args(2)))
 
       def convertScanToString(scan: Scan): String = {
         val proto: ClientProtos.Scan = ProtobufUtil.toScan(scan);
