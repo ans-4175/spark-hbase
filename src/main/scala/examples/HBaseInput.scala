@@ -18,18 +18,19 @@
 package examples
 
 import org.apache.hadoop.hbase.client.HBaseAdmin
-import org.apache.hadoop.hbase.{HBaseConfiguration, HTableDescriptor, TableName}
+import org.apache.hadoop.hbase.{ HBaseConfiguration, HTableDescriptor, TableName }
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat
 import org.apache.hadoop.hbase.KeyValue.Type
 import org.apache.hadoop.hbase.HConstants
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.CellUtil
-
-
 import org.apache.spark._
-
 import scala.collection.JavaConverters._
-
+import org.apache.hadoop.hbase.client.Scan
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil
+import org.apache.hadoop.hbase.protobuf.generated.ClientProtos
+import org.apache.hadoop.hbase.protobuf.ProtobufUtil
+import org.apache.hadoop.hbase.util.Base64
 
 object HBaseInput {
   def main(args: Array[String]) {
@@ -50,6 +51,18 @@ object HBaseInput {
       admin.createTable(tableDesc)
     }
 
+    val scanner = new Scan
+    scanner.setStartRow(Bytes.toBytes(args(2)))
+    scanner.setReversed(true)
+    scanner.setMaxResultSize(200)
+
+      def convertScanToString(scan: Scan): String = {
+        val proto: ClientProtos.Scan = ProtobufUtil.toScan(scan);
+        return Base64.encodeBytes(proto.toByteArray());
+      }
+
+    conf.set(TableInputFormat.SCAN, convertScanToString(scanner))
+
     val hBaseRDD = sc.newAPIHadoopRDD(conf, classOf[TableInputFormat],
       classOf[org.apache.hadoop.hbase.io.ImmutableBytesWritable],
       classOf[org.apache.hadoop.hbase.client.Result])
@@ -58,16 +71,13 @@ object HBaseInput {
     val keyValue = hBaseRDD.map(x => x._2).map(_.list)
 
     //outPut is a RDD[String], in which each line represents a record in HBase
-    val outPut = keyValue.flatMap(x =>  x.asScala.map(cell =>
-        "columnFamily=%s,qualifier=%s,timestamp=%s,type=%s,value=%s".format(
-          Bytes.toStringBinary(CellUtil.cloneFamily(cell)),
-          Bytes.toStringBinary(CellUtil.cloneQualifier(cell)),
-          cell.getTimestamp.toString,
-          Type.codeToType(cell.getTypeByte),
-          Bytes.toStringBinary(CellUtil.cloneValue(cell))
-        )
-      )
-    )
+    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
+      "columnFamily=%s,qualifier=%s,timestamp=%s,type=%s,value=%s".format(
+        Bytes.toStringBinary(CellUtil.cloneFamily(cell)),
+        Bytes.toStringBinary(CellUtil.cloneQualifier(cell)),
+        cell.getTimestamp.toString,
+        Type.codeToType(cell.getTypeByte),
+        Bytes.toStringBinary(CellUtil.cloneValue(cell)))))
 
     outPut.foreach(println)
 
