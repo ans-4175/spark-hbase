@@ -76,7 +76,7 @@ object HBaseInput {
 
     val outPut = keyValue.flatMap { x =>
       x.asScala.map { cell =>
-        CellUtil.cloneValue(cell)
+        Bytes.toString(CellUtil.cloneValue(cell))
       }
     }
 
