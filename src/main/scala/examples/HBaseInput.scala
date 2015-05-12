@@ -53,9 +53,10 @@ object HBaseInput {
 
     val scanner = new Scan
     scanner.setReversed(true)
-    val start = args(2) + "_1431241891000"
+    val start = args(2) + "_" + args(3)
+    val stop = args(2) + "_" + args(4)
     scanner.setStartRow(Bytes.toBytes(start))
-    scanner.setStopRow(Bytes.toBytes(args(2)))
+    scanner.setStopRow(Bytes.toBytes(stop))
 
       def convertScanToString(scan: Scan): String = {
         val proto: ClientProtos.Scan = ProtobufUtil.toScan(scan);
@@ -69,7 +70,7 @@ object HBaseInput {
       classOf[org.apache.hadoop.hbase.client.Result])
 
     //keyValue is a RDD[java.util.list[hbase.KeyValue]]
-    //    val keyValue = hBaseRDD.map(x => x._2).map(_.list)
+    val keyValue = hBaseRDD.map(x => x._2).map(_.list)
 
     //outPut is a RDD[String], in which each line represents a record in HBase
     //    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
@@ -81,9 +82,23 @@ object HBaseInput {
     //        Bytes.toStringBinary(CellUtil.cloneValue(cell)))))
 
     //    outPut.foreach(println)
+    
+    //    val count = hBaseRDD.count()
+    //    println("ini hasilnya: ", count)
 
-    val count = hBaseRDD.count()
-    println("ini hasilnya: ", count)
+    var list = List[String]()
+
+    val output = keyValue.foreach { x =>
+      x.asScala.foreach { cell =>
+        if (Bytes.toString(CellUtil.cloneFamily(cell)) == "identity") {
+          if (Bytes.toString(CellUtil.cloneQualifier(cell)) == "id") {
+            list = list :+ Bytes.toString(CellUtil.cloneValue(cell))
+          }
+        }
+      }
+    }
+
+    list.foreach(println)
 
     sc.stop()
   }

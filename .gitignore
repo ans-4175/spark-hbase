@@ -20,3 +20,6 @@ project/plugins/project/
 # IntelliJ
 *.iml
 .idea/
+/bin/
+/.cache
+/.classpath
