@@ -73,32 +73,32 @@ object HBaseInput {
     val keyValue = hBaseRDD.map(x => x._2).map(_.list)
 
     //outPut is a RDD[String], in which each line represents a record in HBase
-    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
-      "columnFamily=%s,qualifier=%s,timestamp=%s,type=%s,value=%s".format(
-        Bytes.toStringBinary(CellUtil.cloneFamily(cell)),
-        Bytes.toStringBinary(CellUtil.cloneQualifier(cell)),
-        cell.getTimestamp.toString,
-        Type.codeToType(cell.getTypeByte),
-        Bytes.toStringBinary(CellUtil.cloneValue(cell)))))
-
-    outPut.foreach(println)
+    //    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
+    //      "columnFamily=%s,qualifier=%s,timestamp=%s,type=%s,value=%s".format(
+    //        Bytes.toStringBinary(CellUtil.cloneFamily(cell)),
+    //        Bytes.toStringBinary(CellUtil.cloneQualifier(cell)),
+    //        cell.getTimestamp.toString,
+    //        Type.codeToType(cell.getTypeByte),
+    //        Bytes.toStringBinary(CellUtil.cloneValue(cell)))))
+    //
+    //    outPut.foreach(println)
 
     //    val count = hBaseRDD.count()
     //    println("ini hasilnya: ", count)
 
-    //    var outPut = List[String]()
-    //
-    //    keyValue.foreach { x =>
-    //      x.asScala.foreach { cell =>
-    //        if (Bytes.toString(CellUtil.cloneFamily(cell)) == "identity") {
-    //          if (Bytes.toString(CellUtil.cloneQualifier(cell)) == "id") {
-    //            outPut = outPut :+ Bytes.toString(CellUtil.cloneValue(cell))
-    //          }
-    //        }
-    //      }
-    //    }
-    //
-    //    outPut.foreach(println)
+    var outPut = List[String]()
+
+    keyValue.flatMap { x =>
+      x.asScala.map { cell =>
+        if (Bytes.toString(CellUtil.cloneFamily(cell)) == "identity") {
+          if (Bytes.toString(CellUtil.cloneQualifier(cell)) == "id") {
+            outPut = outPut :+ Bytes.toString(CellUtil.cloneValue(cell))
+          }
+        }
+      }
+    }
+
+    outPut.foreach(println)
 
     sc.stop()
   }
