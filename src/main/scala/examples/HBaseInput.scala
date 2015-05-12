@@ -86,13 +86,11 @@ object HBaseInput {
     //    val count = hBaseRDD.count()
     //    println("ini hasilnya: ", count)
 
-    var outPut = List[String]()
-
-    keyValue.flatMap { x =>
+    val outPut = keyValue.flatMap { x =>
       x.asScala.map { cell =>
         if (Bytes.toString(CellUtil.cloneFamily(cell)) == "identity") {
           if (Bytes.toString(CellUtil.cloneQualifier(cell)) == "id") {
-            outPut = outPut :+ Bytes.toString(CellUtil.cloneValue(cell))
+            Bytes.toString(CellUtil.cloneValue(cell))
           }
         }
       }
