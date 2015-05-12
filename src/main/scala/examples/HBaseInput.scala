@@ -31,6 +31,9 @@ import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil
 import org.apache.hadoop.hbase.protobuf.generated.ClientProtos
 import org.apache.hadoop.hbase.protobuf.ProtobufUtil
 import org.apache.hadoop.hbase.util.Base64
+import org.apache.hadoop.hbase.client.HTableInterface
+import org.apache.hadoop.hbase.client.HTable
+import org.apache.hadoop.hbase.client.Get
 
 object HBaseInput {
   def main(args: Array[String]) {
@@ -71,7 +74,6 @@ object HBaseInput {
 
     //keyValue is a RDD[java.util.list[hbase.KeyValue]]
     //    val keyValue = hBaseRDD.map(x => x._2).map(_.list)
-    val keyValue = hBaseRDD.map(x => x._2).map(x => x.getColumn(Bytes.toBytes("identity"), Bytes.toBytes("id")))
 
     //outPut is a RDD[String], in which each line represents a record in HBase
     //    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
@@ -87,16 +89,28 @@ object HBaseInput {
     //    val count = hBaseRDD.count()
     //    println("ini hasilnya: ", count)
 
+    val keyValue = hBaseRDD.map(x => x._2).map(x => x.getColumn(Bytes.toBytes("identity"), Bytes.toBytes("id")))
+    
+    val contentconf = HBaseConfiguration.create()
+    contentconf.set(HConstants.ZOOKEEPER_QUORUM, args(0))
+        
+    val table = new HTable(contentconf, "raw_stream_1.0.0")
+    
     val outPut = keyValue.flatMap { x =>
       x.asScala.map { cell =>
         if (Bytes.toString(CellUtil.cloneFamily(cell)) == "identity") {
           if (Bytes.toString(CellUtil.cloneQualifier(cell)) == "id") {
-            Bytes.toString(CellUtil.cloneValue(cell))
+            val id = CellUtil.cloneValue(cell)
+            val result = table.get(new Get(id))
+            val content = result.getValue(Bytes.toBytes("stream"), Bytes.toBytes("content"))
+            if(content != null){
+              Bytes.toString(content)
+            }
           }
         }
       }
     }
-
+    
     outPut.foreach(println)
 
     sc.stop()
