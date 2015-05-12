@@ -76,11 +76,7 @@ object HBaseInput {
 
     val outPut = keyValue.flatMap { x =>
       x.asScala.map { cell =>
-        if (Bytes.toString(CellUtil.cloneFamily(cell)) == "identity") {
-          if (Bytes.toString(CellUtil.cloneQualifier(cell)) == "id") {
-            CellUtil.cloneValue(cell)
-          }
-        }
+        CellUtil.cloneValue(cell)
       }
     }
 
