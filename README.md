@@ -1,15 +1,11 @@
-spark_hbase
+## NoLimit Indonesia Spark-HBase Learning
 ===========
 
 Spark has their own example about integrating HBase and Spark in scala [HBaseTest.scala](https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/HBaseTest.scala) and python converter [HBaseConverters.scala](https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/pythonconverters/HBaseConverters.scala). 
 
-However, the python converter `HBaseResultToStringConverter` in  [HBaseConverters.scala](https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/pythonconverters/HBaseConverters.scala) return only the value of first column in the result. And [HBaseTest.scala](https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/HBaseTest.scala) stops just at returning *org.apache.hadoop.hbase.client.Result* and doing .count() call.
-
-Here we provide a new example in Scala about transferring data saved in hbase into `String` by Spark and a new example of python converter.
+Here we provide a new example in Scala about transferring data saved in hbase into `String` by Spark.
 
 The example in scala [HBaseInput.scala](/src/main/scala/examples/HBaseInput.scala) transfers the data saved in hbase into `RDD[String]` which contains *columnFamily, qualifier, timestamp, type, value*. 
-
-The example of converter for python [pythonConverters.scala](/src/main/scala/examples//pythonConverters.scala) transfer the data saved in hbase into string which contains the same information as the example above. We can use `ast` package to easily transfer this string to dictionary
 
 How to run
 =========
@@ -17,7 +13,7 @@ How to run
 2. Download this application by 
 
   ```bash
-   $ git clone https://github.com/GenTang/spark_hbase.git
+   $ git clone https://github.com/nolimitid/spark-hbase
   ```
 
 3. Build the assembly by using SBT `assembly`
@@ -25,28 +21,6 @@ How to run
   ```bash
   $ <the path to spark_hbase>/sbt/sbt clean assembly
   ```
-
-* Run example python script [hbase_input.py](hbase_input.py) which use pythonConverter `ImmutableBytesWritableToStringConverter` and `HBaseResultToStringConverter` to convert the data in hbase to dictionary
-
-  * If you are using `SPARK_CLASSPATH`:
-     1. Add `export SPARK_CLASSPATH=$SPARK_CLASSPATH":<the path to hbase>/lib/*:<the path to spark_hbase>/target/scala-2.10/spark_hbase-assembly-1.0.jar` to `./conf/spark-env.sh`.
-  
-    2. Launch the script by 
-      ```bash
-      $ ./bin/spark-submit <the path to hbase_input.py> \
-         <host> <table> <column>
-      ```
-
-  * You can also use `spark.executor.extraClassPath` and `--driver-class-path` (recommended):
-     1. Add `spark.executor.extraClassPath <the path to hbase>/lib/*` to `spark-defaults.conf`.
-
-     2. Launch the script by
-       ```bash
-        $ ./bin/spark-submit \
-           --driver-class-path <the path to spark_hbase>/target/scala-2.10/spark_hbase-assembly-1.0.jar \
-           <the path to hbase_input.py> \
-           <host> <table> <column>
-       ```
 
 * Run example scala script [HBaseInput.scala](/src/main/scala/examples/HBaseInput.scala)
   * If you are using `SPARK_CLASSPATH`:
