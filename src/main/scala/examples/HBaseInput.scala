@@ -70,7 +70,8 @@ object HBaseInput {
       classOf[org.apache.hadoop.hbase.client.Result])
 
     //keyValue is a RDD[java.util.list[hbase.KeyValue]]
-    val keyValue = hBaseRDD.map(x => x._2).map(_.list)
+    //    val keyValue = hBaseRDD.map(x => x._2).map(_.list)
+    val keyValue = hBaseRDD.map(x => x._2).map(x => x.getColumn(Bytes.toBytes("identity"), Bytes.toBytes("id")))
 
     //outPut is a RDD[String], in which each line represents a record in HBase
     //    val outPut = keyValue.flatMap(x => x.asScala.map(cell =>
