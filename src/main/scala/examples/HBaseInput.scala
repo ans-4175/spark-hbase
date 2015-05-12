@@ -93,6 +93,7 @@ object HBaseInput {
     
     val contentconf = HBaseConfiguration.create()
     contentconf.set(HConstants.ZOOKEEPER_QUORUM, args(0))
+    contentconf.set("hbase.master", args(0) + ":" + 60000)
         
     val table = new HTable(contentconf, "raw_stream_1.0.0")
     
