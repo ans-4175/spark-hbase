@@ -2,6 +2,7 @@
 *.log
 *.swp
 .cache
+.classpath
 
 # sbt specific
 .cache/
